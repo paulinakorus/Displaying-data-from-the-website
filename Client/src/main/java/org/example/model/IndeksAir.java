@@ -21,6 +21,10 @@ public class IndeksAir {
         this.stIndexCrParam = stIndexCrParam;
     }
 
+    public IndeksAir(){
+        this(0, null, null, null, null, null, null, null);
+    }
+
     public int getStationId() {
         return stationId;
     }

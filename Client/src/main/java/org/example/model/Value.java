@@ -9,6 +9,10 @@ public class Value {
         this.value = value;
     }
 
+    public Value(){
+        this(null, 0.0);
+    }
+
     public String getDate() {
         return date;
     }

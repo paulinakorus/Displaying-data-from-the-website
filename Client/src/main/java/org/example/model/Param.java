@@ -13,6 +13,10 @@ public class Param {
         this.id = id;
     }
 
+    public Param(){
+        this(null, null, null, 0);
+    }
+
     public String getName() {
         return name;
     }

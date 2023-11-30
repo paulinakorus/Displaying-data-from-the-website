@@ -11,6 +11,10 @@ public class Commune {
         this.provinceName = provinceName;
     }
 
+    public Commune(){
+        this(null, null, null);
+    }
+
     public String getCommuneName() {
         return communeName;
     }

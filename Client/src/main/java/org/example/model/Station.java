@@ -17,6 +17,10 @@ public class Station {
         this.adressStreet = adressStreet;
     }
 
+    public Station(){
+        this(0, null, 0.0, 0.0, null, null);
+    }
+
     public int getId() {
         return id;
     }

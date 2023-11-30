@@ -11,6 +11,10 @@ public class Stand {
         this.param = param;
     }
 
+    public Stand(){
+        this(0, 0, null);
+    }
+
     public int getStandId() {
         return standId;
     }

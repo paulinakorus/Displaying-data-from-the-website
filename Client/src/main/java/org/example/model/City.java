@@ -11,6 +11,11 @@ public class City {
         this.commune = commune;
     }
 
+    public City (){
+        this(0, null, null);
+    }
+
+
     public int getId() {
         return id;
     }

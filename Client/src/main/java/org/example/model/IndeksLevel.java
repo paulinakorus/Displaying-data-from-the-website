@@ -9,6 +9,10 @@ public class IndeksLevel {
         this.indexLevelName = indexLevelName;
     }
 
+    public IndeksLevel(){
+        this(0, null);
+    }
+
     public int getId() {
         return id;
     }

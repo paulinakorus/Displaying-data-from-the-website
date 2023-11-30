@@ -9,6 +9,10 @@ public class Sensor {
         this.value = value;
     }
 
+    public Sensor(){
+        this(null, null);
+    }
+
     public String getKey() {
         return key;
     }

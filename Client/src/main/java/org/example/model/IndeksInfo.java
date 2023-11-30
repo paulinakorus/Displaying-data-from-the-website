@@ -11,6 +11,10 @@ public class IndeksInfo {
         this.sourceDataDate = sourceDataDate;
     }
 
+    public IndeksInfo(){
+        this(null, null, null);
+    }
+
     public String getCalcDate() {
         return calcDate;
     }
