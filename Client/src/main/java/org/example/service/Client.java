@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.model.Sensor;
 import org.example.model.Stand;
 import org.example.model.Station;
 import org.example.service.Implementation;
@@ -20,5 +21,7 @@ public class Client
         //implementation.fetchStands();
         List<Station> stationList = implementation.getStationList();
         //List<List<Stand>> standList = implementation.getStandList();
+        implementation.fetchSensors();
+        List<Sensor> sensorList = implementation.getSensorList();
     }
 }

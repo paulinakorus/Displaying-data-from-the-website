@@ -19,6 +19,7 @@ public class Implementation {
     private HttpClient client;
     private static List<Station> stationList = new ArrayList<>();
     private static List<List<Stand>> standList = new ArrayList<>();
+    private static List<Sensor> sensorList = new ArrayList<>();
     public Implementation(HttpURLConnection connection, HttpClient client){
         this.connection = connection;
         this.client = client;
@@ -73,6 +74,7 @@ public class Implementation {
         return commune;
     }
 
+    // Getting stands
     public void fetchStands() {
         for (int j = 0; j < stationList.size(); j++) {
             HttpRequest request = HttpRequest.newBuilder().uri(create("https://api.gios.gov.pl/pjp-api/rest/station/sensors/" + String.valueOf(j + 1))).build();
@@ -124,11 +126,49 @@ public class Implementation {
         return param;
     }
 
+    // Getting sensors
+    public void fetchSensors(){
+        int iterator = 1;
+        HttpRequest request = HttpRequest.newBuilder().uri(create("https://api.gios.gov.pl/pjp-api/rest/data/getData/" + iterator)).build();
+        while (request != null) {
+            request = HttpRequest.newBuilder().uri(create("https://api.gios.gov.pl/pjp-api/rest/data/getData/" + iterator)).build();
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body).thenApply(Implementation::parseSensors).join();          // thenApply(Main::parse) - could be parsing into objects
+        }
+    }
+
+    public static String parseSensors(String responseBody) {
+        JSONObject album = new JSONObject(responseBody);
+        sensorList.add(parseOneSensor(album));
+        return null;
+    }
+
+    private static Sensor parseOneSensor(JSONObject album){
+        String sensorKey = album.getString("id");
+        JSONObject valueFull = album.getJSONObject("values");
+
+        Sensor sensor = new Sensor(sensorKey, parseValue(valueFull));
+        return sensor;
+    }
+
+    private static Value parseValue(JSONObject valueFull){
+        if(!valueFull.isEmpty()) {
+            String date = valueFull.getString("date");
+            double value = valueFull.getDouble("value");
+            Value value1 = new Value(date, value);
+            return value1;
+        }
+        Value value1 = new Value();
+        return value1;
+    }
     public static List<Station> getStationList() {
         return stationList;
     }
 
     public static List<List<Stand>> getStandList() {
         return standList;
+    }
+
+    public static List<Sensor> getSensorList() {
+        return sensorList;
     }
 }
