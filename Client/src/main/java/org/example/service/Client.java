@@ -1,5 +1,6 @@
 package org.example.service;
 
+import org.example.model.Stand;
 import org.example.model.Station;
 import org.example.service.Implementation;
 
@@ -16,7 +17,8 @@ public class Client
         HttpClient client = HttpClient.newHttpClient();
         Implementation implementation = new Implementation(connection, client);
         implementation.fetchAll();
+        //implementation.fetchStands();
         List<Station> stationList = implementation.getStationList();
-        System.out.println(stationList);
+        //List<List<Stand>> standList = implementation.getStandList();
     }
 }

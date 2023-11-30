@@ -18,7 +18,7 @@ public class Implementation {
     private HttpURLConnection connection;
     private HttpClient client;
     private static List<Station> stationList = new ArrayList<>();
-    private static List<Stand> standList = new ArrayList<>();
+    private static List<List<Stand>> standList = new ArrayList<>();
     public Implementation(HttpURLConnection connection, HttpClient client){
         this.connection = connection;
         this.client = client;
@@ -73,28 +73,44 @@ public class Implementation {
         return commune;
     }
 
-    public void fetchStands(int stationID){
-        HttpRequest request = HttpRequest.newBuilder().uri(create("https://api.gios.gov.pl/pjp-api/rest/station/sensors/" + String.valueOf(stationID))).build();
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body).thenApply(Implementation::parseStands).join();          // thenApply(Main::parse) - could be parsing into objects
+    public void fetchStands() {
+        for (int j = 0; j < stationList.size(); j++) {
+            HttpRequest request = HttpRequest.newBuilder().uri(create("https://api.gios.gov.pl/pjp-api/rest/station/sensors/" + String.valueOf(j + 1))).build();
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body).thenApply(Implementation::parseStands).join();          // thenApply(Main::parse) - could be parsing into objects
+        }
     }
 
     public static String parseStands(String responseBody) {
         JSONArray albums = new JSONArray(responseBody);                                 // getting our response to JSONArray
 
-        standList = new ArrayList<>();
-        for (int i=0; i < albums.length(); i++){
-            JSONObject album = albums.getJSONObject(i);                                 // getting object
-            standList.add(parseOneStand(album));
+        if(!albums.isEmpty()){
+            for(int j=0; j < stationList.size(); j++) {
+                List<Stand> oneStandList = new ArrayList<>();
+                for (int i = 0; i < albums.length(); i++) {
+                    JSONObject album = albums.getJSONObject(i);                                 // getting object
+                    if(!album.isEmpty()){
+                        Stand stand = parseOneStand(album);
+                        if(stand.getStandId() != 0){
+                            oneStandList.add(stand);
+                        }
+                    }
+                }
+                if(!oneStandList.isEmpty())
+                    standList.add(oneStandList);
+            }
         }
         return null;
     }
 
     private static Stand parseOneStand(JSONObject album){
+        Stand stand = null;
         int standId = album.getInt("id");
         int stationId = album.getInt("stationId");
-        JSONObject fullParam = new JSONObject("param");
 
-        Stand stand = new Stand(standId, stationId, parseParam(fullParam));
+        if(standId!=0 && stationId!=0){
+            JSONObject fullParam = new JSONObject("param");
+            stand = new Stand(standId, stationId, parseParam(fullParam));
+        }
         return stand;
     }
 
@@ -110,5 +126,9 @@ public class Implementation {
 
     public static List<Station> getStationList() {
         return stationList;
+    }
+
+    public static List<List<Stand>> getStandList() {
+        return standList;
     }
 }
