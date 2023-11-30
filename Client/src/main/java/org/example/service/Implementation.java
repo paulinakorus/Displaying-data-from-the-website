@@ -1,8 +1,6 @@
 package org.example.service;
 
-import org.example.model.City;
-import org.example.model.Commune;
-import org.example.model.Station;
+import org.example.model.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,6 +18,7 @@ public class Implementation {
     private HttpURLConnection connection;
     private HttpClient client;
     private static List<Station> stationList = new ArrayList<>();
+    private static List<Stand> standList = new ArrayList<>();
     public Implementation(HttpURLConnection connection, HttpClient client){
         this.connection = connection;
         this.client = client;
@@ -43,27 +42,24 @@ public class Implementation {
     }
 
     private static Station parseOneStation(JSONObject album){
-            int stationId = album.getInt("id");
-            String stationName = album.getString("stationName");
-            double gegrLat = album.getDouble("gegrLat");
-            double gegrLon = album.getDouble("gegrLon");
-            String adressStreet = null;
-            if(!album.isNull("addressStreet")){
-                adressStreet = album.getString("addressStreet");
-            }
+        int stationId = album.getInt("id");
+        String stationName = album.getString("stationName");
+        double gegrLat = album.getDouble("gegrLat");
+        double gegrLon = album.getDouble("gegrLon");
+        String adressStreet = null;
+        if(!album.isNull("addressStreet")){
+            adressStreet = album.getString("addressStreet");
+        }
 
-            Station station = new Station(stationId, stationName, gegrLat, gegrLon, parseCity(album), adressStreet);
-            return station;
+        Station station = new Station(stationId, stationName, gegrLat, gegrLon, parseCity(album), adressStreet);
+        return station;
     }
     private static City parseCity(JSONObject album){
         JSONObject fullCity = album.getJSONObject("city");
         int cityId = fullCity.getInt("id");
         String cityName = fullCity.getString("name");
 
-        City city = null;
-        //if(cityId != 0 && cityName != null){
-            city = new City(cityId, cityName, parseCommune(fullCity));
-        //}
+        City city = new City(cityId, cityName, parseCommune(fullCity));
         return city;
     }
 
@@ -73,11 +69,46 @@ public class Implementation {
         String districtName = fullCommune.getString("districtName");
         String provinceName = fullCommune.getString("provinceName");
 
-        Commune commune = null;
-        //if(communeName != null && districtName != null && provinceName != null){
-            commune = new Commune(communeName, districtName, provinceName);
-        //}
+        Commune commune = new Commune(communeName, districtName, provinceName);
         return commune;
     }
 
+    public void fetchStands(int stationID){
+        HttpRequest request = HttpRequest.newBuilder().uri(create("https://api.gios.gov.pl/pjp-api/rest/station/sensors/" + String.valueOf(stationID))).build();
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body).thenApply(Implementation::parseStands).join();          // thenApply(Main::parse) - could be parsing into objects
+    }
+
+    public static String parseStands(String responseBody) {
+        JSONArray albums = new JSONArray(responseBody);                                 // getting our response to JSONArray
+
+        standList = new ArrayList<>();
+        for (int i=0; i < albums.length(); i++){
+            JSONObject album = albums.getJSONObject(i);                                 // getting object
+            standList.add(parseOneStand(album));
+        }
+        return null;
+    }
+
+    private static Stand parseOneStand(JSONObject album){
+        int standId = album.getInt("id");
+        int stationId = album.getInt("stationId");
+        JSONObject fullParam = new JSONObject("param");
+
+        Stand stand = new Stand(standId, stationId, parseParam(fullParam));
+        return stand;
+    }
+
+    private static Param parseParam(JSONObject fullParam){
+        String paramName = fullParam.getString("paramName");
+        String paramFormula = fullParam.getString("paramFormula");
+        String paramCode = fullParam.getString("paramCode");
+        int idParam = fullParam.getInt("idParam");
+
+        Param param = new Param(paramName, paramFormula, paramCode, idParam);
+        return param;
+    }
+
+    public static List<Station> getStationList() {
+        return stationList;
+    }
 }
