@@ -15,7 +15,6 @@ public class City {
         this(0, null, null);
     }
 
-
     public int getId() {
         return id;
     }
