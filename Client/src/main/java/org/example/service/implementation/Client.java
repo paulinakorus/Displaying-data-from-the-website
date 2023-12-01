@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.service.implementation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,7 @@ import org.example.model.IndeksAir;
 import org.example.model.Sensor;
 import org.example.model.Stand;
 import org.example.model.Station;
+import org.example.service.ClientInterface;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,8 +16,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-public class Client
-{
+public class Client implements ClientInterface {
+    private static ClientInterface INSTANCE = null;
     private static final String BASE_API_URL = "https://api.gios.gov.pl/pjp-api/rest";
     private static final HttpClient client =  HttpClient.newHttpClient();
 
@@ -32,6 +33,7 @@ public class Client
         //List<IndeksAir> indeksAirList = parse.getIndeksAir();                                                         // too slow
     }
 
+    @Override
     public static <R> R get(String path, Class<R> responseType){
         var objectMapper = new ObjectMapper();
         objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
@@ -47,5 +49,12 @@ public class Client
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static ClientInterface getInstance(){
+        if(INSTANCE == null){
+            INSTANCE = new Client();
+        }
+        return INSTANCE;
     }
 }
