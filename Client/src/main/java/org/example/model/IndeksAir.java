@@ -1,76 +1,178 @@
 package org.example.model;
 
 public class IndeksAir {
-    private int stationId;
-    private IndeksInfo station;
-    private IndeksInfo so2;
-    private IndeksInfo no2;
-    private IndeksInfo pm10;
-    private IndeksInfo o3;
+    private int id;
+    private String stCalcDate;
+    private IndeksLevel stIndexLevel;
+    private String stSourceDataDate;
+    private String so2CalcDate;
+    private IndeksLevel so2IndexLevel;
+    private String so2SourceDataDate;
+    private String no2CalcDate;
+    private IndeksLevel no2IndexLevel;
+    private String no2SourceDataDate;
+    private String pm10CalcDate;
+    private IndeksLevel pm10IndexLevel;
+    private String pm10SourceDataDate;
+    private String pm25CalcDate;
+    private IndeksLevel pm25IndexLevel;
+    private String pm25SourceDataDate;
+    private String o3CalcDate;
+    private IndeksLevel o3IndexLevel;
+    private String o3SourceDataDate;
     private Boolean stIndexStatus;
     private String stIndexCrParam;
 
-    public IndeksAir(int stationId, IndeksInfo station, IndeksInfo so2, IndeksInfo no2, IndeksInfo pm10, IndeksInfo o3, Boolean stIndexStatus, String stIndexCrParam){
-        this.stationId = stationId;
-        this.station = station;
-        this.so2 = so2;
-        this.no2 = no2;
-        this.pm10 = pm10;
-        this.o3 = o3;
-        this.stIndexStatus = stIndexStatus;
-        this.stIndexCrParam = stIndexCrParam;
+    public int getId() {
+        return id;
     }
 
-    public IndeksAir(){
-        this(0, null, null, null, null, null, null, null);
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public int getStationId() {
-        return stationId;
+    public String getStCalcDate() {
+        return stCalcDate;
     }
 
-    public void setStationId(int stationId) {
-        this.stationId = stationId;
+    public void setStCalcDate(String stCalcDate) {
+        this.stCalcDate = stCalcDate;
     }
 
-    public IndeksInfo getStation() {
-        return station;
+    public IndeksLevel getStIndexLevel() {
+        return stIndexLevel;
     }
 
-    public void setStation(IndeksInfo station) {
-        this.station = station;
+    public void setStIndexLevel(IndeksLevel stIndexLevel) {
+        this.stIndexLevel = stIndexLevel;
     }
 
-    public IndeksInfo getSo2() {
-        return so2;
+    public String getStSourceDataDate() {
+        return stSourceDataDate;
     }
 
-    public void setSo2(IndeksInfo so2) {
-        this.so2 = so2;
+    public void setStSourceDataDate(String stSourceDataDate) {
+        this.stSourceDataDate = stSourceDataDate;
     }
 
-    public IndeksInfo getNo2() {
-        return no2;
+    public String getSo2CalcDate() {
+        return so2CalcDate;
     }
 
-    public void setNo2(IndeksInfo no2) {
-        this.no2 = no2;
+    public void setSo2CalcDate(String so2CalcDate) {
+        this.so2CalcDate = so2CalcDate;
     }
 
-    public IndeksInfo getPm10() {
-        return pm10;
+    public IndeksLevel getSo2IndexLevel() {
+        return so2IndexLevel;
     }
 
-    public void setPm10(IndeksInfo pm10) {
-        this.pm10 = pm10;
+    public void setSo2IndexLevel(IndeksLevel so2IndexLevel) {
+        this.so2IndexLevel = so2IndexLevel;
     }
 
-    public IndeksInfo getO3() {
-        return o3;
+    public String getSo2SourceDataDate() {
+        return so2SourceDataDate;
     }
 
-    public void setO3(IndeksInfo o3) {
-        this.o3 = o3;
+    public void setSo2SourceDataDate(String so2SourceDataDate) {
+        this.so2SourceDataDate = so2SourceDataDate;
+    }
+
+    public String getNo2CalcDate() {
+        return no2CalcDate;
+    }
+
+    public void setNo2CalcDate(String no2CalcDate) {
+        this.no2CalcDate = no2CalcDate;
+    }
+
+    public IndeksLevel getNo2IndexLevel() {
+        return no2IndexLevel;
+    }
+
+    public void setNo2IndexLevel(IndeksLevel no2IndexLevel) {
+        this.no2IndexLevel = no2IndexLevel;
+    }
+
+    public String getNo2SourceDataDate() {
+        return no2SourceDataDate;
+    }
+
+    public void setNo2SourceDataDate(String no2SourceDataDate) {
+        this.no2SourceDataDate = no2SourceDataDate;
+    }
+
+    public String getPm10CalcDate() {
+        return pm10CalcDate;
+    }
+
+    public void setPm10CalcDate(String pm10CalcDate) {
+        this.pm10CalcDate = pm10CalcDate;
+    }
+
+    public IndeksLevel getPm10IndexLevel() {
+        return pm10IndexLevel;
+    }
+
+    public void setPm10IndexLevel(IndeksLevel pm10IndexLevel) {
+        this.pm10IndexLevel = pm10IndexLevel;
+    }
+
+    public String getPm10SourceDataDate() {
+        return pm10SourceDataDate;
+    }
+
+    public void setPm10SourceDataDate(String pm10SourceDataDate) {
+        this.pm10SourceDataDate = pm10SourceDataDate;
+    }
+
+    public String getPm25CalcDate() {
+        return pm25CalcDate;
+    }
+
+    public void setPm25CalcDate(String pm25CalcDate) {
+        this.pm25CalcDate = pm25CalcDate;
+    }
+
+    public IndeksLevel getPm25IndexLevel() {
+        return pm25IndexLevel;
+    }
+
+    public void setPm25IndexLevel(IndeksLevel pm25IndexLevel) {
+        this.pm25IndexLevel = pm25IndexLevel;
+    }
+
+    public String getPm25SourceDataDate() {
+        return pm25SourceDataDate;
+    }
+
+    public void setPm25SourceDataDate(String pm25SourceDataDate) {
+        this.pm25SourceDataDate = pm25SourceDataDate;
+    }
+
+    public String getO3CalcDate() {
+        return o3CalcDate;
+    }
+
+    public void setO3CalcDate(String o3CalcDate) {
+        this.o3CalcDate = o3CalcDate;
+    }
+
+    public IndeksLevel getO3IndexLevel() {
+        return o3IndexLevel;
+    }
+
+    public void setO3IndexLevel(IndeksLevel o3IndexLevel) {
+        this.o3IndexLevel = o3IndexLevel;
+    }
+
+    public String getO3SourceDataDate() {
+        return o3SourceDataDate;
+    }
+
+    public void setO3SourceDataDate(String o3SourceDataDate) {
+        this.o3SourceDataDate = o3SourceDataDate;
     }
 
     public Boolean getStIndexStatus() {

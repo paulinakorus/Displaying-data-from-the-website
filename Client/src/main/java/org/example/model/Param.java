@@ -1,28 +1,28 @@
 package org.example.model;
 
 public class Param {
-    private String name;
+    private String paramName;
     private String paramFormula;
     private String paramCode;
-    private int id;
+    private int idParam;
 
-    public Param(String name, String paramFormula, String paramCode, int id) {
-        this.name = name;
+    public Param(String paramName, String paramFormula, String paramCode, int iidParamd) {
+        this.paramName = paramName;
         this.paramFormula = paramFormula;
         this.paramCode = paramCode;
-        this.id = id;
+        this.idParam = idParam;
     }
 
     public Param(){
         this(null, null, null, 0);
     }
 
-    public String getName() {
-        return name;
+    public String getParamName() {
+        return paramName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setParamName(String paramName) {
+        this.paramName = paramName;
     }
 
     public String getParamFormula() {
@@ -41,11 +41,11 @@ public class Param {
         this.paramCode = paramCode;
     }
 
-    public int getId() {
-        return id;
+    public int getIdParam() {
+        return idParam;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdParam(int idParam) {
+        this.idParam = idParam;
     }
 }

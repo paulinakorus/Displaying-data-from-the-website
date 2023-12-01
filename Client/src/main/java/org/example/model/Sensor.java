@@ -2,11 +2,11 @@ package org.example.model;
 
 public class Sensor {
     private String key;
-    private Value value;
+    private Value[] values;
 
-    public Sensor(String key, Value value){
+    public Sensor(String key, Value[] values){
         this.key = key;
-        this.value = value;
+        this.values = values;
     }
 
     public Sensor(){
@@ -21,11 +21,11 @@ public class Sensor {
         this.key = key;
     }
 
-    public Value getValue() {
-        return value;
+    public Value[] getValues() {
+        return values;
     }
 
-    public void setValue(Value value) {
-        this.value = value;
+    public void setValues(Value[] values) {
+        this.values = values;
     }
 }

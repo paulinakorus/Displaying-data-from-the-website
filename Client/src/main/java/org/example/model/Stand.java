@@ -1,12 +1,12 @@
 package org.example.model;
 
 public class Stand {
-    private int standId;
+    private int id;
     private int stationId;
     private Param param;
 
     public Stand(int standId, int stationId, Param param) {
-        this.standId = standId;
+        this.id = standId;
         this.stationId = stationId;
         this.param = param;
     }
@@ -15,12 +15,12 @@ public class Stand {
         this(0, 0, null);
     }
 
-    public int getStandId() {
-        return standId;
+    public int getId() {
+        return id;
     }
 
-    public void setStandId(int standId) {
-        this.standId = standId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getStationId() {
