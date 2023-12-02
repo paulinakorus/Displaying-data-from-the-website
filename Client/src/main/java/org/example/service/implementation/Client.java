@@ -19,9 +19,16 @@ import java.util.List;
 public class Client implements ClientInterface {
     private static ClientInterface INSTANCE = null;
     private static final String BASE_API_URL = "https://api.gios.gov.pl/pjp-api/rest";
-    private static final HttpClient client =  HttpClient.newHttpClient();
+    private final HttpClient client;
+    private final ObjectMapper objectMapper;
 
-    public static void main(String[] args ) throws IOException {
+    public Client() {
+        client = HttpClient.newHttpClient();
+        this.objectMapper = new ObjectMapper();
+        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+    /*public static void main(String[] args ) throws IOException {
         HttpURLConnection connection = null;
         Parsing parse = new Parsing();
 
@@ -31,12 +38,11 @@ public class Client implements ClientInterface {
         Sensor sensor = parse.fetchSensor(92);
         IndeksAir indeksAir = parse.fetchIndeksAir(52);
         //List<IndeksAir> indeksAirList = parse.getIndeksAir();                                                         // too slow
-    }
+    }*/
 
-    @Override
-    public static <R> R get(String path, Class<R> responseType){
-        var objectMapper = new ObjectMapper();
-        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+
+
+    public <R> R get(String path, Class<R> responseType){
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_API_URL + path))
                 .GET()

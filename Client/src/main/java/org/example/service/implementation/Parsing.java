@@ -1,35 +1,35 @@
-package org.example.service.implementation;
+package org.example.service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.model.IndeksAir;
 import org.example.model.Sensor;
 import org.example.model.Stand;
 import org.example.model.Station;
-import org.example.service.ParsingInterface;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parsing implements ParsingInterface{
-    private static ParsingInterface INSTANCE = null;
-    private HttpURLConnection connection;
-    private HttpClient client;
+public class Parsing {
+    private static final String BASE_API_URL = "https://api.gios.gov.pl/pjp-api/rest";
+    private static final HttpClient client =  HttpClient.newHttpClient();
     private static List<Sensor> sensorList = new ArrayList<>();
 
-    @Override
     public Station[] fetchAll(){
-        var data = Client.get("/station/findAll", Station[].class);
+        var data = get("/station/findAll", Station[].class);
         return data;
     }
 
-    @Override
     public Stand[] fetchStand(int stationId){
-        var data = Client.get("/station/sensors/" + stationId, Stand[].class);
+        var data = get("/station/sensors/" + stationId, Stand[].class);
         return data;
     }
 
-    @Override
     public List<Stand[]> getStands(){
         var stations = fetchAll();
         List<Stand[]> standsList = new ArrayList<>();
@@ -43,19 +43,16 @@ public class Parsing implements ParsingInterface{
         return standsList;
     }
 
-    @Override
     public Sensor fetchSensor(int sensorId){
-        var data = Client.get("/data/getData/" + sensorId, Sensor.class);
+        var data = get("/data/getData/" + sensorId, Sensor.class);
         return data;
     }
 
-    @Override
     public IndeksAir fetchIndeksAir(int stationId){
-        var data = Client.get("/aqindex/getIndex/" + stationId, IndeksAir.class);
+        var data = get("/aqindex/getIndex/" + stationId, IndeksAir.class);
         return data;
     }
 
-    @Override
     public List<IndeksAir> getIndeksAir(){
         var stations = fetchAll();
         List<IndeksAir> indeksAirList = new ArrayList<>();
@@ -69,10 +66,20 @@ public class Parsing implements ParsingInterface{
         return indeksAirList;
     }
 
-    public static ParsingInterface getInstance() {
-        if(INSTANCE == null){
-            INSTANCE = new Parsing();
+    public <R> R get(String path, Class<R> responseType){
+        var objectMapper = new ObjectMapper();
+        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_API_URL + path))
+                .GET()
+                .build();
+
+        try{
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return objectMapper.readValue(response.body(), responseType);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return INSTANCE;
+        return null;
     }
 }
