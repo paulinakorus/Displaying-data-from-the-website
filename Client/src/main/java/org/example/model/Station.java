@@ -2,6 +2,9 @@ package org.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @JsonIgnoreProperties(value = {"addressStreet"})
 public class Station {
     private int id;
@@ -10,6 +13,7 @@ public class Station {
     private double gegrLon;
     private City city;
     private String adressStreet;
+    private static List<City> cityList = new ArrayList<>();
 
     public Station(int id, String stationName, double gegrLat, double gegrLon, City city, String adressStreet) {
         this.id = id;
@@ -18,10 +22,29 @@ public class Station {
         this.gegrLon = gegrLon;
         this.city = city;
         this.adressStreet = adressStreet;
-    }
 
+        addToList();
+    }
     public Station(){
         this(0, null, 0.0, 0.0, null, null);
+    }
+
+    public void addToList (){
+        if(!ifExist(this.city)){
+            this.cityList.add(this.city);
+        }
+    }
+
+    public Boolean ifExist(City ourCity){
+        if(this.cityList == null)
+            return false;
+        else {
+            for (City city : this.cityList) {
+                if(city == ourCity)
+                    return true;
+            }
+        }
+        return false;
     }
 
     public int getId() {
@@ -70,5 +93,13 @@ public class Station {
 
     public void setAdressStreet(String adressStreet) {
         this.adressStreet = adressStreet;
+    }
+
+    public static List<City> getCityList() {
+        return cityList;
+    }
+
+    public static void setCityList(List<City> cityList) {
+        Station.cityList = cityList;
     }
 }

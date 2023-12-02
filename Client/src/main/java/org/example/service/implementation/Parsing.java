@@ -2,10 +2,8 @@ package org.example.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.model.IndeksAir;
-import org.example.model.Sensor;
-import org.example.model.Stand;
-import org.example.model.Station;
+import org.example.model.*;
+import org.example.service.implementation.Client;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -17,9 +15,14 @@ import java.util.List;
 
 public class Parsing {
     private static final String BASE_API_URL = "https://api.gios.gov.pl/pjp-api/rest";
+    private static ParsingInterface INSTANCE = null;
     private static final HttpClient client =  HttpClient.newHttpClient();
     private static List<Sensor> sensorList = new ArrayList<>();
+    private List<City> cityList = new ArrayList<>();
 
+    private List<City> getCityList(){
+        return Station.getCityList();
+    }
     public Station[] fetchAll(){
         var data = get("/station/findAll", Station[].class);
         return data;
@@ -81,5 +84,12 @@ public class Parsing {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static ParsingInterface getInstance(){
+        if(INSTANCE == null){
+            INSTANCE = (ParsingInterface) new Parsing();
+        }
+        return INSTANCE;
     }
 }
