@@ -2,7 +2,7 @@ package org.example;
 
 import org.example.model.*;
 import org.example.service.ClientInterface;
-import org.example.service.Parsing;
+import org.example.service.implementation.Parsing;
 import org.example.service.ParsingInterface;
 import org.example.service.implementation.Client;
 import org.jfree.chart.ChartFactory;
@@ -137,23 +137,23 @@ public class AirConditionApplication extends JFrame {
     }
 
     private void createParamsCharts(int StationID){
-        Stand[] standTab = parsing.fetchStand(StationID);
+        Stand[] standTab = parsing.fetchStand(stationCityList.get(StationID).getId());
         for (Stand oneStand : standTab) {
             String paramFormula = oneStand.getParam().getParamFormula();
-            int paramID = oneStand.getParam().getIdParam();
+            int paramID = oneStand.getId();
             Sensor sensor = parsing.fetchSensor(paramID);
 
             JFreeChart chart = createLineChart(sensor);
             if(paramFormula.equals("NO2"))
                 no2Panel.add(new ChartPanel(chart));
             else if(paramFormula.equals("O3"))
-                no2Panel.add(new ChartPanel(chart));
+                o3Panel.add(new ChartPanel(chart));
             else if(paramFormula.equals("SO2"))
-                no2Panel.add(new ChartPanel(chart));
+                so2Panel.add(new ChartPanel(chart));
             else if(paramFormula.equals("PM25"))
-                no2Panel.add(new ChartPanel(chart));
+                pm25Panel.add(new ChartPanel(chart));
             else if(paramFormula.equals("PM10"))
-                no2Panel.add(new ChartPanel(chart));
+                pm10Panel.add(new ChartPanel(chart));
         }
     }
     private JFreeChart createLineChart(Sensor sensor){
