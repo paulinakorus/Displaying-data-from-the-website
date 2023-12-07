@@ -1,19 +1,24 @@
 package org.example;
 
-import org.example.model.City;
-import org.example.model.Station;
+import org.example.model.*;
 import org.example.service.ClientInterface;
 import org.example.service.Parsing;
 import org.example.service.ParsingInterface;
 import org.example.service.implementation.Client;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class AirConditionApplication extends JFrame{
+public class AirConditionApplication extends JFrame {
     private JTabbedPane ValuesPane;
     private JComboBox<String> cityBox;
     private JTabbedPane ChartsPane;
@@ -45,7 +50,7 @@ public class AirConditionApplication extends JFrame{
     private String selectedCity;
     private int currentStationID = 0;
 
-    public AirConditionApplication(){
+    public AirConditionApplication() {
         this.setTitle("MainForm");                                     // set title of frame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);           // exit out off application
         this.setResizable(false);                                      // preventing frame from being resized
@@ -65,68 +70,62 @@ public class AirConditionApplication extends JFrame{
 
         setUpComboBox();
         setUpButtons();
-
     }
 
-    private void setUpComboBox(){
+    private void setUpComboBox() {
         List<City> cityList = parsing.getCityList();
+        cityBox.addItem("Choose");
         for (City city : cityList) {
             cityBox.addItem(city.getName());
         }
-        add(cityBox);
+
         cityBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectedCity = (String) cityBox.getSelectedItem();
+                selectedCity = Objects.requireNonNull(cityBox.getSelectedItem()).toString();
                 stationCityList = parsing.getAllCity(selectedCity);
             }
         });
     }
 
-    /*private List<Station> getByName(int cityID){
-        List<Station> stationsByName = new ArrayList<>();
-        for(int i=0; i<stationList.size(); i++){
-            if(cityID == stationList.get(i).getCity().getId()){
-                stationsByName.add(stationList.get(i));
-            }
-        }
-        return stationsByName;
-    }*/
-
-    private void setUpButtons(){
+    private void setUpButtons() {
         readButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getSource() == readButton){
+                if (e.getSource() == readButton) {
                     stationCityList = parsing.getAllCity(selectedCity);
                     currentStationID = 0;
+                    uploadStation(0);
+                    createParamsCharts(0);
                 }
             }
         });
         previousButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getSource() == previousButton){
-                    if(currentStationID > 0){
+                if (e.getSource() == previousButton) {
+                    if (currentStationID > 0) {
                         uploadStation(--currentStationID);
+                        createParamsCharts(currentStationID);
                     }
                 }
             }
         });
 
-        previousButton.addActionListener(new ActionListener() {
+        nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(e.getSource() == nextButton){
-                    if(currentStationID < stationCityList.size()-1){
+                if (e.getSource() == nextButton) {
+                    if (currentStationID < stationCityList.size() - 1) {
                         uploadStation(++currentStationID);
+                        createParamsCharts(currentStationID);
                     }
                 }
             }
         });
     }
 
-    private void uploadStation(int StationID){
+    private void uploadStation(int StationID) {
         Station station = stationCityList.get(StationID);
         stationIDLabel.setText("ID: " + station.getId());
         stationNameLabel.setText("Name: " + station.getStationName());
@@ -135,5 +134,49 @@ public class AirConditionApplication extends JFrame{
         cityIDLabel.setText("City ID: " + station.getCity().getId());
         cityNameLabel.setText("City name: " + station.getCity().getName());
         communeNameLabel.setText("Commune name: " + station.getCity().getCommune().getCommuneName());
+    }
+
+    private void createParamsCharts(int StationID){
+        Stand[] standTab = parsing.fetchStand(StationID);
+        for (Stand oneStand : standTab) {
+            String paramFormula = oneStand.getParam().getParamFormula();
+            int paramID = oneStand.getParam().getIdParam();
+            Sensor sensor = parsing.fetchSensor(paramID);
+
+            JFreeChart chart = createLineChart(sensor);
+            if(paramFormula.equals("NO2"))
+                no2Panel.add(new ChartPanel(chart));
+            else if(paramFormula.equals("O3"))
+                no2Panel.add(new ChartPanel(chart));
+            else if(paramFormula.equals("SO2"))
+                no2Panel.add(new ChartPanel(chart));
+            else if(paramFormula.equals("PM25"))
+                no2Panel.add(new ChartPanel(chart));
+            else if(paramFormula.equals("PM10"))
+                no2Panel.add(new ChartPanel(chart));
+        }
+    }
+    private JFreeChart createLineChart(Sensor sensor){
+        DefaultCategoryDataset dataset = createDataSet(sensor);
+        JFreeChart chart = ChartFactory.createLineChart(
+                sensor.getKey(),                  // chart title
+                "Date",                           // X-Axis Label
+                "Value",                          // Y-Axis Label
+                dataset,                          // dataset
+                PlotOrientation.VERTICAL,         // orientation
+                false,                            // legend
+                true,                             // tooltips
+                false                             // urls
+        );
+        return chart;
+    }
+
+    private DefaultCategoryDataset createDataSet(Sensor sensor){
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        for (Value oneValue : sensor.getValues()) {
+            dataset.addValue(oneValue.getValue(), sensor.getKey(), oneValue.getDate());
+        }
+
+        return dataset;
     }
 }
