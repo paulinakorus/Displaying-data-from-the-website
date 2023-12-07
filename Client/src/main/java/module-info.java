@@ -6,4 +6,6 @@ module Client {
 
     opens org.example.model to com.fasterxml.jackson.databind;
     exports org.example.model;
+    exports org.example.service.implementation;
+    exports org.example.service;
 }

@@ -22,29 +22,9 @@ public class Station {
         this.gegrLon = gegrLon;
         this.city = city;
         this.adressStreet = adressStreet;
-
-        addToList();
     }
     public Station(){
         this(0, null, 0.0, 0.0, null, null);
-    }
-
-    public void addToList (){
-        if(!ifExist(this.city)){
-            this.cityList.add(this.city);
-        }
-    }
-
-    public Boolean ifExist(City ourCity){
-        if(this.cityList == null)
-            return false;
-        else {
-            for (City city : this.cityList) {
-                if(city == ourCity)
-                    return true;
-            }
-        }
-        return false;
     }
 
     public int getId() {

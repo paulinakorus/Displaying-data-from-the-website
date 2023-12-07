@@ -1,24 +1,49 @@
 package org.example;
 
+import org.example.model.City;
+import org.example.model.Station;
+import org.example.service.ClientInterface;
+import org.example.service.Parsing;
+import org.example.service.ParsingInterface;
+import org.example.service.implementation.Client;
+
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AirConditionApplication extends JFrame{
     private JTabbedPane ValuesPane;
-    private JComboBox cityBox;
+    private JComboBox<String> cityBox;
     private JTabbedPane ChartsPane;
     private JPanel so2Panel;
     private JPanel no2Panel;
     private JPanel pm10Panel;
     private JPanel pm25Panel;
     private JPanel o3Panel;
-    private JTable stationsTable;
     private JLabel StationsLabel;
     private JButton readButton;
-    private JButton nextButton;
-    private JButton previousButton;
     private JPanel chartsPanel;
     private JPanel mainPanel;
     private JLabel citiesLabel;
+    private JButton previousButton;
+    private JButton nextButton;
+    private JLabel stationIDLabel;
+    private JLabel stationNameLabel;
+    private JLabel gegrLatLabel;
+    private JLabel gegrLonLabel;
+    private JLabel cityIDLabel;
+    private JLabel cityNameLabel;
+    private JLabel communeNameLabel;
+
+
+    private final ClientInterface client = Client.getInstance();
+    private final ParsingInterface parsing = Parsing.getInstance();
+    private List<Station> stationList = new ArrayList<>();
+    private List<Station> stationCityList = new ArrayList<>();
+    private String selectedCity;
+    private int currentStationID = 0;
 
     public AirConditionApplication(){
         this.setTitle("MainForm");                                     // set title of frame
@@ -27,5 +52,88 @@ public class AirConditionApplication extends JFrame{
         this.setSize(700, 500);                            // setting size
         this.setVisible(true);                                         // making frame visible
         this.add(mainPanel);
+
+        this.stationList = parsing.fetchAll();
+
+        stationIDLabel.setText("ID: -");
+        stationNameLabel.setText("Name: -");
+        gegrLatLabel.setText("Lat: -");
+        gegrLonLabel.setText("Lon: -");
+        cityIDLabel.setText("City ID: -");
+        cityNameLabel.setText("City name: -");
+        communeNameLabel.setText("Commune name: -");
+
+        setUpComboBox();
+        setUpButtons();
+
+    }
+
+    private void setUpComboBox(){
+        List<City> cityList = parsing.getCityList();
+        for (City city : cityList) {
+            cityBox.addItem(city.getName());
+        }
+        add(cityBox);
+        cityBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectedCity = (String) cityBox.getSelectedItem();
+                stationCityList = parsing.getAllCity(selectedCity);
+            }
+        });
+    }
+
+    /*private List<Station> getByName(int cityID){
+        List<Station> stationsByName = new ArrayList<>();
+        for(int i=0; i<stationList.size(); i++){
+            if(cityID == stationList.get(i).getCity().getId()){
+                stationsByName.add(stationList.get(i));
+            }
+        }
+        return stationsByName;
+    }*/
+
+    private void setUpButtons(){
+        readButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource() == readButton){
+                    stationCityList = parsing.getAllCity(selectedCity);
+                    currentStationID = 0;
+                }
+            }
+        });
+        previousButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource() == previousButton){
+                    if(currentStationID > 0){
+                        uploadStation(--currentStationID);
+                    }
+                }
+            }
+        });
+
+        previousButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(e.getSource() == nextButton){
+                    if(currentStationID < stationCityList.size()-1){
+                        uploadStation(++currentStationID);
+                    }
+                }
+            }
+        });
+    }
+
+    private void uploadStation(int StationID){
+        Station station = stationCityList.get(StationID);
+        stationIDLabel.setText("ID: " + station.getId());
+        stationNameLabel.setText("Name: " + station.getStationName());
+        gegrLatLabel.setText("Lat: " + station.getGegrLat());
+        gegrLonLabel.setText("Lon: " + station.getGegrLon());
+        cityIDLabel.setText("City ID: " + station.getCity().getId());
+        cityNameLabel.setText("City name: " + station.getCity().getName());
+        communeNameLabel.setText("Commune name: " + station.getCity().getCommune().getCommuneName());
     }
 }

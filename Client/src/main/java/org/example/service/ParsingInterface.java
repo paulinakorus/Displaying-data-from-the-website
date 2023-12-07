@@ -1,14 +1,13 @@
 package org.example.service;
 
-import org.example.model.IndeksAir;
-import org.example.model.Sensor;
-import org.example.model.Stand;
-import org.example.model.Station;
+import org.example.model.*;
 
 import java.util.List;
 
 public interface ParsingInterface  {
-    Station[] fetchAll();
+    List<City> getCityList();
+    List<Station> getAllCity(String name);
+    List<Station> fetchAll();
     Stand[] fetchStand(int stationId);
     List<Stand[]> getStands();
     Sensor fetchSensor(int sensorId);

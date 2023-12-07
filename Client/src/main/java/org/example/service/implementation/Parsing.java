@@ -13,19 +13,53 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parsing {
+public class Parsing implements ParsingInterface {
     private static final String BASE_API_URL = "https://api.gios.gov.pl/pjp-api/rest";
-    private static ParsingInterface INSTANCE = null;
+    private static Parsing INSTANCE = null;
     private static final HttpClient client =  HttpClient.newHttpClient();
     private static List<Sensor> sensorList = new ArrayList<>();
     private List<City> cityList = new ArrayList<>();
 
-    private List<City> getCityList(){
-        return Station.getCityList();
+    public List<City> getCityList(){
+        List<Station> stationList = fetchAll();
+        for (Station station : stationList) {
+            addToList(station.getCity());
+        }
+        return cityList;
     }
-    public Station[] fetchAll(){
-        var data = get("/station/findAll", Station[].class);
+
+    public List<Station> getAllCity(String name){
+        List<Station> stationList = fetchAll();
+        List<Station> stationCityList = new ArrayList<>();
+        for (Station station : stationList) {
+            if(station.getCity().getName().equals(name)){
+                stationCityList.add(station);
+            }
+        }
+        return stationCityList;
+    }
+
+    public List<Station> fetchAll(){
+        var data = List.of(get("/station/findAll", Station[].class));
         return data;
+    }
+
+    public void addToList (City city){
+        if(!ifExist(city)){
+            this.cityList.add(city);
+        }
+    }
+
+    public Boolean ifExist(City ourCity){
+        if(this.cityList == null)
+            return false;
+        else {
+            for (City city : this.cityList) {
+                if(city.getId() == ourCity.getId())
+                    return true;
+            }
+        }
+        return false;
     }
 
     public Stand[] fetchStand(int stationId){
@@ -37,8 +71,8 @@ public class Parsing {
         var stations = fetchAll();
         List<Stand[]> standsList = new ArrayList<>();
 
-        for(int i=0; i<stations.length; i++){
-            var stand = fetchStand(stations[i].getId());
+        for(int i=0; i<stations.size(); i++){
+            var stand = fetchStand(stations.get(i).getId());
             if(stand != null){
                 standsList.add(stand);
             }
@@ -60,8 +94,8 @@ public class Parsing {
         var stations = fetchAll();
         List<IndeksAir> indeksAirList = new ArrayList<>();
 
-        for(int i=0; i<stations.length; i++){
-            var indeksAir = fetchIndeksAir(stations[i].getId());
+        for(int i=0; i<stations.size(); i++){
+            var indeksAir = fetchIndeksAir(stations.get(i).getId());
             if(indeksAir != null){
                 indeksAirList.add(indeksAir);
             }
@@ -88,7 +122,7 @@ public class Parsing {
 
     public static ParsingInterface getInstance(){
         if(INSTANCE == null){
-            INSTANCE = (ParsingInterface) new Parsing();
+            INSTANCE = new Parsing();
         }
         return INSTANCE;
     }
