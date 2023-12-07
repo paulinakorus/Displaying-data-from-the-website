@@ -1,8 +1,9 @@
-package org.example.service;
+package org.example.service.implementation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.model.*;
+import org.example.service.ParsingInterface;
 import org.example.service.implementation.Client;
 
 import java.net.HttpURLConnection;
