@@ -20,6 +20,9 @@ public class IndeksAir {
     private String o3CalcDate;
     private IndeksLevel o3IndexLevel;
     private String o3SourceDataDate;
+    private String c6h6CalcDate;
+    private IndeksLevel c6h6IndexLevel;
+    private String c6h6SourceDataDate;
     private Boolean stIndexStatus;
     private String stIndexCrParam;
 
@@ -173,6 +176,30 @@ public class IndeksAir {
 
     public void setO3SourceDataDate(String o3SourceDataDate) {
         this.o3SourceDataDate = o3SourceDataDate;
+    }
+
+    public String getC6h6CalcDate() {
+        return c6h6CalcDate;
+    }
+
+    public void setC6h6CalcDate(String c6h6CalcDate) {
+        this.c6h6CalcDate = c6h6CalcDate;
+    }
+
+    public IndeksLevel getC6h6IndexLevel() {
+        return c6h6IndexLevel;
+    }
+
+    public void setC6h6IndexLevel(IndeksLevel c6h6IndexLevel) {
+        this.c6h6IndexLevel = c6h6IndexLevel;
+    }
+
+    public String getC6h6SourceDataDate() {
+        return c6h6SourceDataDate;
+    }
+
+    public void setC6h6SourceDataDate(String c6h6SourceDataDate) {
+        this.c6h6SourceDataDate = c6h6SourceDataDate;
     }
 
     public Boolean getStIndexStatus() {

@@ -8,24 +8,31 @@ import org.example.service.implementation.Client;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static java.awt.Color.WHITE;
+
 public class AirConditionApplication extends JFrame {
-    private JTabbedPane ValuesPane;
     private JComboBox<String> cityBox;
+    private JTabbedPane paramCharts;
     private JTabbedPane ChartsPane;
     private JPanel so2Panel;
     private JPanel no2Panel;
     private JPanel pm10Panel;
     private JPanel pm25Panel;
+    private JPanel c6h6Panel;
     private JPanel o3Panel;
     private JLabel StationsLabel;
     private JButton readButton;
@@ -41,6 +48,7 @@ public class AirConditionApplication extends JFrame {
     private JLabel cityIDLabel;
     private JLabel cityNameLabel;
     private JLabel communeNameLabel;
+    private JLabel cityLabel;
 
 
     private final ClientInterface client = Client.getInstance();
@@ -48,13 +56,15 @@ public class AirConditionApplication extends JFrame {
     private List<Station> stationList = new ArrayList<>();
     private List<Station> stationCityList = new ArrayList<>();
     private String selectedCity;
-    private int currentStationID = 0;
+    private int currentStationPositionInList = 0;
+    private Boolean[] isThereData = {false,false,false,false,false,false};
+    JPanel[] tabPanel = {o3Panel, no2Panel, so2Panel, pm25Panel, pm10Panel, c6h6Panel};
 
     public AirConditionApplication() {
         this.setTitle("MainForm");                                     // set title of frame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);           // exit out off application
         this.setResizable(false);                                      // preventing frame from being resized
-        this.setSize(700, 500);                            // setting size
+        this.setSize(800, 700);                            // setting size
         this.setVisible(true);                                         // making frame visible
         this.add(mainPanel);
 
@@ -70,6 +80,11 @@ public class AirConditionApplication extends JFrame {
 
         setUpComboBox();
         setUpButtons();
+
+        for (JPanel onePanel : tabPanel) {
+            onePanel.setLayout(new BorderLayout());
+            onePanel.setSize(400, 300);
+        }
     }
 
     private void setUpComboBox() {
@@ -94,9 +109,10 @@ public class AirConditionApplication extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == readButton) {
                     stationCityList = parsing.getAllCity(selectedCity);
-                    currentStationID = 0;
+                    currentStationPositionInList = 0;
                     uploadStation(0);
                     createParamsCharts(0);
+                    createLevelBarChart(0);
                 }
             }
         });
@@ -104,9 +120,10 @@ public class AirConditionApplication extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == previousButton) {
-                    if (currentStationID > 0) {
-                        uploadStation(--currentStationID);
-                        createParamsCharts(currentStationID);
+                    if (currentStationPositionInList > 0) {
+                        uploadStation(--currentStationPositionInList);
+                        createParamsCharts(currentStationPositionInList);
+                        createLevelBarChart(currentStationPositionInList);
                     }
                 }
             }
@@ -116,9 +133,10 @@ public class AirConditionApplication extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == nextButton) {
-                    if (currentStationID < stationCityList.size() - 1) {
-                        uploadStation(++currentStationID);
-                        createParamsCharts(currentStationID);
+                    if (currentStationPositionInList < stationCityList.size() - 1) {
+                        uploadStation(++currentStationPositionInList);
+                        createParamsCharts(currentStationPositionInList);
+                        createLevelBarChart(currentStationPositionInList);
                     }
                 }
             }
@@ -144,20 +162,46 @@ public class AirConditionApplication extends JFrame {
             Sensor sensor = parsing.fetchSensor(paramID);
 
             JFreeChart chart = createLineChart(sensor);
-            if(paramFormula.equals("NO2"))
-                no2Panel.add(new ChartPanel(chart));
-            else if(paramFormula.equals("O3"))
+            if(paramFormula.equals("O3")){
                 o3Panel.add(new ChartPanel(chart));
-            else if(paramFormula.equals("SO2"))
+                isThereData[0] = true;
+            }else if(paramFormula.equals("NO2")){
+                no2Panel.add(new ChartPanel(chart));
+                isThereData[1] = true;
+            }else if(paramFormula.equals("SO2")){
                 so2Panel.add(new ChartPanel(chart));
-            else if(paramFormula.equals("PM25"))
+                isThereData[2] = true;
+            }
+            else if(paramFormula.equals("PM25")){
                 pm25Panel.add(new ChartPanel(chart));
-            else if(paramFormula.equals("PM10"))
+                isThereData[3] = true;
+            }
+            else if(paramFormula.equals("PM10")){
                 pm10Panel.add(new ChartPanel(chart));
+                isThereData[4] = true;
+            }else if(paramFormula.equals("C6H6")){
+                c6h6Panel.add(new ChartPanel(chart));
+                isThereData[5] = true;
+            }
+        }
+
+        for(int i=0; i<tabPanel.length; i++){
+            if (!isThereData[i])
+                setUpNoDataLabel(tabPanel[i]);
         }
     }
+
+    private void setUpNoDataLabel(JPanel panel){
+        Label noDataLabel = new Label("No data");
+        noDataLabel.setForeground(WHITE);
+        noDataLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        noDataLabel.setLocation(200, 100);
+        panel.add(noDataLabel);
+        panel.setBackground(new java.awt.Color(109,144,142));
+    }
+
     private JFreeChart createLineChart(Sensor sensor){
-        DefaultCategoryDataset dataset = createDataSet(sensor);
+        DefaultCategoryDataset dataset = createDataSetLineChart(sensor);
         JFreeChart chart = ChartFactory.createLineChart(
                 sensor.getKey(),                  // chart title
                 "Date",                           // X-Axis Label
@@ -168,15 +212,60 @@ public class AirConditionApplication extends JFrame {
                 true,                             // tooltips
                 false                             // urls
         );
+        CategoryAxis axis = chart.getCategoryPlot().getDomainAxis();
+        axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);           // ustawienie pozycji dat pod kątem 90 stopni
         return chart;
     }
 
-    private DefaultCategoryDataset createDataSet(Sensor sensor){
+    private DefaultCategoryDataset createDataSetLineChart(Sensor sensor){
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        int iterator=0;
         for (Value oneValue : sensor.getValues()) {
-            dataset.addValue(oneValue.getValue(), sensor.getKey(), oneValue.getDate());
+            if (++iterator%2 == 0)
+                dataset.addValue(oneValue.getValue(), sensor.getKey(), oneValue.getDate());
+            else
+                dataset.addValue(oneValue.getValue(), sensor.getKey(), "");
         }
-
         return dataset;
     }
+
+    private void createLevelBarChart(int stationID){
+        int id = stationCityList.get(stationID).getId();
+        IndeksAir app = parsing.fetchIndeksAir(id);
+        chartsPanel.setLayout(new BorderLayout());
+        chartsPanel.add(new ChartPanel(createBarChart(app)));
+    }
+    private JFreeChart createBarChart(IndeksAir app){
+        DefaultCategoryDataset dataset = createDataSetBarChart(app);
+        JFreeChart chart = ChartFactory.createBarChart("Levels of param", "Param", "Level", dataset, PlotOrientation.VERTICAL, false, true, false);
+        CategoryPlot plot = chart.getCategoryPlot();
+        plot.setRangeGridlinePaint(WHITE);
+        return chart;
+    }
+
+    private DefaultCategoryDataset createDataSetBarChart(IndeksAir app){
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        if(app.getSo2IndexLevel()!=null)
+            dataset.addValue(5-app.getSo2IndexLevel().getId(), "Level", "SO2");
+        if(app.getNo2IndexLevel()!=null)
+            dataset.addValue(5-app.getNo2IndexLevel().getId(), "Level", "NO2");
+        if(app.getO3IndexLevel()!=null)
+            dataset.addValue(5-app.getO3IndexLevel().getId(), "Level", "O3");
+        if(app.getPm25IndexLevel()!=null)
+            dataset.addValue(5-app.getPm25IndexLevel().getId(), "Level", "PM2.5");
+        if(app.getPm10IndexLevel()!=null)
+            dataset.addValue(5-app.getPm10IndexLevel().getId(), "Level", "PM10");
+        if(app.getC6h6IndexLevel()!=null)
+            dataset.addValue(5-app.getC6h6IndexLevel().getId(), "Level", "C6H6");
+        return dataset;
+    }
+
+
+    /*private Date formattingDate (Value oneValue){
+        String dateInString = oneValue.getDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
+        Date date = (Date) formatter.parse(dateInString);
+        return date;
+    }*/
+
 }
