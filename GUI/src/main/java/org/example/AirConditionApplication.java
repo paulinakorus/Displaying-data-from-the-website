@@ -126,9 +126,7 @@ public class AirConditionApplication extends JFrame {
                         uploadStation(--currentStationPositionInList);
 
                         clearPanels();
-                        //ParamValuesChart paramChart = new ParamValuesChart(tabPanel, stationCityList);
                         paramChart.createParamsCharts(currentStationPositionInList);
-                        //ParamLevelChart levelChart = new ParamLevelChart(chartsPanel, stationCityList);
                         levelChart.createLevelBarChart(currentStationPositionInList);
                     }
                 }
@@ -143,9 +141,7 @@ public class AirConditionApplication extends JFrame {
                         uploadStation(++currentStationPositionInList);
 
                         clearPanels();
-                        //paramChart = new ParamValuesChart(tabPanel, stationCityList);
                         paramChart.createParamsCharts(currentStationPositionInList);
-                        //levelChart = new ParamLevelChart(chartsPanel, stationCityList);
                         levelChart.createLevelBarChart(currentStationPositionInList);
                     }
                 }

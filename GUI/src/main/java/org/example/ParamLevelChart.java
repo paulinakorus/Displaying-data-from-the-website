@@ -9,13 +9,11 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.Color.WHITE;
@@ -41,7 +39,28 @@ public class ParamLevelChart {
         JFreeChart chart = ChartFactory.createBarChart("Levels of param", "Param", "Level", dataset, PlotOrientation.VERTICAL, false, true, false);
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setRangeGridlinePaint(WHITE);
+
+
+        for(int j=0; j<dataset.getColumnCount(); j++){
+            CategoryItemRenderer renderer = plot.getRenderer();
+            setColorToLevel(0, j, dataset, renderer);
+            System.out.println("row: " + 0 + "  column: " + j + "  value: " + dataset.getValue(0, j));
+        }
+
         return chart;
+    }
+
+    private void setColorToLevel(int i, int j, DefaultCategoryDataset dataset, CategoryItemRenderer renderer){
+        if(dataset.getValue(i, j).equals(5.0))
+            renderer.setSeriesPaint(j, new Color(0,174,29));
+        else if(dataset.getValue(i, j).equals(4.0))
+            renderer.setSeriesPaint(j, new Color(0, 238, 40));
+        else if(dataset.getValue(i, j).equals(3.0))
+            renderer.setSeriesPaint(j, new Color(198, 238, 0));
+        else if(dataset.getValue(i, j).equals(2.0))
+            renderer.setSeriesPaint(j, new Color(238, 166, 0));
+        else if(dataset.getValue(i, j).equals(1.0))
+            renderer.setSeriesPaint(j, new Color(238, 71, 0));
     }
 
     private DefaultCategoryDataset createDataSetBarChart(IndeksAir app){

@@ -25,7 +25,6 @@ import static java.awt.Color.WHITE;
 import static org.example.AirConditionApplication.*;
 
 public class ParamValuesChart {
-    private Boolean[] isThereData = {false,false,false,false,false,false, false};
     private JPanel[] tabPanel;
     private List<Station> stationCityList = new ArrayList<>();
     private final ParsingInterface parsing = Parsing.getInstance();
@@ -37,6 +36,7 @@ public class ParamValuesChart {
 
     void createParamsCharts(int StationID){
         Stand[] standTab = parsing.fetchStand(stationCityList.get(StationID).getId());
+        Boolean[] isThereData = {false,false,false,false,false,false,false};
         for (Stand oneStand : standTab) {
             String paramFormula = oneStand.getParam().getParamFormula();
             int paramID = oneStand.getId();
@@ -53,7 +53,7 @@ public class ParamValuesChart {
                 tabPanel[2].add(new ChartPanel(chart));
                 isThereData[2] = true;
             }
-            else if(paramFormula.equals("PM25")){
+            else if(paramFormula.equals("PM2.5")){
                 tabPanel[3].add(new ChartPanel(chart));
                 isThereData[3] = true;
             }
@@ -81,7 +81,7 @@ public class ParamValuesChart {
         noDataLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         noDataLabel.setLocation(200, 100);
         panel.add(noDataLabel);
-        panel.setBackground(new java.awt.Color(109,144,142));
+        panel.setBackground(new Color(109,144,142));
     }
 
     private JFreeChart createLineChart(Sensor sensor){
