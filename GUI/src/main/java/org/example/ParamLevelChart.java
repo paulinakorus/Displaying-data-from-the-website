@@ -9,6 +9,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 
@@ -40,13 +41,13 @@ public class ParamLevelChart {
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setRangeGridlinePaint(WHITE);
 
-
-        for(int j=0; j<dataset.getColumnCount(); j++){
-            CategoryItemRenderer renderer = plot.getRenderer();
-            setColorToLevel(0, j, dataset, renderer);
-            System.out.println("row: " + 0 + "  column: " + j + "  value: " + dataset.getValue(0, j));
+        CategoryItemRenderer renderer = new BarRenderer();
+        for (int i=0; i<dataset.getRowCount(); i++){
+            for(int j=0; j<dataset.getColumnCount(); j++){
+                setColorToLevel(i, j, dataset, renderer);
+                System.out.println("row: " + i + "  column: " + j + "  value: " + dataset.getValue(i, j));
+            }
         }
-
         return chart;
     }
 
