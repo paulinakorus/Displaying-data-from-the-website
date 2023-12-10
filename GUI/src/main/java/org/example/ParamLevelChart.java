@@ -23,7 +23,7 @@ import static java.awt.Color.WHITE;
 public class ParamLevelChart {
 
     private JPanel chartsPanel;
-    private java.util.List<Station> stationCityList = new ArrayList<>();
+    private java.util.List<Station> stationCityList;
     private final ParsingInterface parsing = Parsing.getInstance();
 
     public ParamLevelChart(JPanel chartsPanel, List<Station> stationCityList){
@@ -58,6 +58,8 @@ public class ParamLevelChart {
             dataset.addValue(5-app.getPm10IndexLevel().getId(), "Level", "PM10");
         if(app.getC6h6IndexLevel()!=null)
             dataset.addValue(5-app.getC6h6IndexLevel().getId(), "Level", "C6H6");
+        if(app.getCoIndexLevel()!=null)
+            dataset.addValue(5-app.getCoIndexLevel().getId(), "Level", "CO");
         return dataset;
     }
 }

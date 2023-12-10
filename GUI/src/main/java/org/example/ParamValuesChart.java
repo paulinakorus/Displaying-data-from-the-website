@@ -25,7 +25,7 @@ import static java.awt.Color.WHITE;
 import static org.example.AirConditionApplication.*;
 
 public class ParamValuesChart {
-    private Boolean[] isThereData = {false,false,false,false,false,false};
+    private Boolean[] isThereData = {false,false,false,false,false,false, false};
     private JPanel[] tabPanel;
     private List<Station> stationCityList = new ArrayList<>();
     private final ParsingInterface parsing = Parsing.getInstance();
@@ -63,6 +63,9 @@ public class ParamValuesChart {
             }else if(paramFormula.equals("C6H6")){
                 tabPanel[5].add(new ChartPanel(chart));
                 isThereData[5] = true;
+            }else if(paramFormula.equals("CO")){
+                tabPanel[6].add(new ChartPanel(chart));
+                isThereData[6] = true;
             }
         }
 

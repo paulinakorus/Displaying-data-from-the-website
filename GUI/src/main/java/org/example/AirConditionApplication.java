@@ -49,6 +49,7 @@ public class AirConditionApplication extends JFrame {
     private JLabel cityNameLabel;
     private JLabel communeNameLabel;
     private JLabel cityLabel;
+    private JPanel coPanel;
 
 
     private final ClientInterface client = Client.getInstance();
@@ -57,7 +58,7 @@ public class AirConditionApplication extends JFrame {
     private List<Station> stationCityList = new ArrayList<>();
     private String selectedCity;
     private int currentStationPositionInList = 0;
-    private JPanel[] tabPanel = {o3Panel, no2Panel, so2Panel, pm25Panel, pm10Panel, c6h6Panel};
+    private JPanel[] tabPanel = {o3Panel, no2Panel, so2Panel, pm25Panel, pm10Panel, c6h6Panel, coPanel};
     private ParamValuesChart paramChart;
     private ParamLevelChart levelChart;
 
@@ -81,11 +82,7 @@ public class AirConditionApplication extends JFrame {
 
         setUpComboBox();
         setUpButtons();
-
-        for (JPanel onePanel : tabPanel) {
-            onePanel.setLayout(new BorderLayout());
-            onePanel.setSize(400, 300);
-        }
+        setUpPanels();
     }
 
     private void setUpComboBox() {
@@ -113,6 +110,7 @@ public class AirConditionApplication extends JFrame {
                     currentStationPositionInList = 0;
                     uploadStation(0);
 
+                    clearPanels();
                     paramChart = new ParamValuesChart(tabPanel, stationCityList);
                     paramChart.createParamsCharts(0);
                     levelChart = new ParamLevelChart(chartsPanel, stationCityList);
@@ -126,7 +124,11 @@ public class AirConditionApplication extends JFrame {
                 if (e.getSource() == previousButton) {
                     if (currentStationPositionInList > 0) {
                         uploadStation(--currentStationPositionInList);
+
+                        clearPanels();
+                        //ParamValuesChart paramChart = new ParamValuesChart(tabPanel, stationCityList);
                         paramChart.createParamsCharts(currentStationPositionInList);
+                        //ParamLevelChart levelChart = new ParamLevelChart(chartsPanel, stationCityList);
                         levelChart.createLevelBarChart(currentStationPositionInList);
                     }
                 }
@@ -139,7 +141,11 @@ public class AirConditionApplication extends JFrame {
                 if (e.getSource() == nextButton) {
                     if (currentStationPositionInList < stationCityList.size() - 1) {
                         uploadStation(++currentStationPositionInList);
+
+                        clearPanels();
+                        //paramChart = new ParamValuesChart(tabPanel, stationCityList);
                         paramChart.createParamsCharts(currentStationPositionInList);
+                        //levelChart = new ParamLevelChart(chartsPanel, stationCityList);
                         levelChart.createLevelBarChart(currentStationPositionInList);
                     }
                 }
@@ -156,5 +162,19 @@ public class AirConditionApplication extends JFrame {
         cityIDLabel.setText("City ID: " + station.getCity().getId());
         cityNameLabel.setText("City name: " + station.getCity().getName());
         communeNameLabel.setText("Commune name: " + station.getCity().getCommune().getCommuneName());
+    }
+
+    private void setUpPanels(){
+        for (JPanel onePanel : tabPanel) {
+            onePanel.setLayout(new BorderLayout());
+            onePanel.setSize(400, 300);
+        }
+    }
+
+    private void clearPanels(){
+        for (JPanel panel:tabPanel) {
+            panel.removeAll();
+        }
+        chartsPanel.removeAll();
     }
 }
