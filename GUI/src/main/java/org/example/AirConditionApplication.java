@@ -57,8 +57,9 @@ public class AirConditionApplication extends JFrame {
     private List<Station> stationCityList = new ArrayList<>();
     private String selectedCity;
     private int currentStationPositionInList = 0;
-    private Boolean[] isThereData = {false,false,false,false,false,false};
-    JPanel[] tabPanel = {o3Panel, no2Panel, so2Panel, pm25Panel, pm10Panel, c6h6Panel};
+    private JPanel[] tabPanel = {o3Panel, no2Panel, so2Panel, pm25Panel, pm10Panel, c6h6Panel};
+    private ParamValuesChart paramChart;
+    private ParamLevelChart levelChart;
 
     public AirConditionApplication() {
         this.setTitle("MainForm");                                     // set title of frame
@@ -111,8 +112,11 @@ public class AirConditionApplication extends JFrame {
                     stationCityList = parsing.getAllCity(selectedCity);
                     currentStationPositionInList = 0;
                     uploadStation(0);
-                    createParamsCharts(0);
-                    createLevelBarChart(0);
+
+                    paramChart = new ParamValuesChart(tabPanel, stationCityList);
+                    paramChart.createParamsCharts(0);
+                    levelChart = new ParamLevelChart(chartsPanel, stationCityList);
+                    levelChart.createLevelBarChart(0);
                 }
             }
         });
@@ -122,8 +126,8 @@ public class AirConditionApplication extends JFrame {
                 if (e.getSource() == previousButton) {
                     if (currentStationPositionInList > 0) {
                         uploadStation(--currentStationPositionInList);
-                        createParamsCharts(currentStationPositionInList);
-                        createLevelBarChart(currentStationPositionInList);
+                        paramChart.createParamsCharts(currentStationPositionInList);
+                        levelChart.createLevelBarChart(currentStationPositionInList);
                     }
                 }
             }
@@ -135,8 +139,8 @@ public class AirConditionApplication extends JFrame {
                 if (e.getSource() == nextButton) {
                     if (currentStationPositionInList < stationCityList.size() - 1) {
                         uploadStation(++currentStationPositionInList);
-                        createParamsCharts(currentStationPositionInList);
-                        createLevelBarChart(currentStationPositionInList);
+                        paramChart.createParamsCharts(currentStationPositionInList);
+                        levelChart.createLevelBarChart(currentStationPositionInList);
                     }
                 }
             }
@@ -153,119 +157,4 @@ public class AirConditionApplication extends JFrame {
         cityNameLabel.setText("City name: " + station.getCity().getName());
         communeNameLabel.setText("Commune name: " + station.getCity().getCommune().getCommuneName());
     }
-
-    private void createParamsCharts(int StationID){
-        Stand[] standTab = parsing.fetchStand(stationCityList.get(StationID).getId());
-        for (Stand oneStand : standTab) {
-            String paramFormula = oneStand.getParam().getParamFormula();
-            int paramID = oneStand.getId();
-            Sensor sensor = parsing.fetchSensor(paramID);
-
-            JFreeChart chart = createLineChart(sensor);
-            if(paramFormula.equals("O3")){
-                o3Panel.add(new ChartPanel(chart));
-                isThereData[0] = true;
-            }else if(paramFormula.equals("NO2")){
-                no2Panel.add(new ChartPanel(chart));
-                isThereData[1] = true;
-            }else if(paramFormula.equals("SO2")){
-                so2Panel.add(new ChartPanel(chart));
-                isThereData[2] = true;
-            }
-            else if(paramFormula.equals("PM25")){
-                pm25Panel.add(new ChartPanel(chart));
-                isThereData[3] = true;
-            }
-            else if(paramFormula.equals("PM10")){
-                pm10Panel.add(new ChartPanel(chart));
-                isThereData[4] = true;
-            }else if(paramFormula.equals("C6H6")){
-                c6h6Panel.add(new ChartPanel(chart));
-                isThereData[5] = true;
-            }
-        }
-
-        for(int i=0; i<tabPanel.length; i++){
-            if (!isThereData[i])
-                setUpNoDataLabel(tabPanel[i]);
-        }
-    }
-
-    private void setUpNoDataLabel(JPanel panel){
-        Label noDataLabel = new Label("No data");
-        noDataLabel.setForeground(WHITE);
-        noDataLabel.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-        noDataLabel.setLocation(200, 100);
-        panel.add(noDataLabel);
-        panel.setBackground(new java.awt.Color(109,144,142));
-    }
-
-    private JFreeChart createLineChart(Sensor sensor){
-        DefaultCategoryDataset dataset = createDataSetLineChart(sensor);
-        JFreeChart chart = ChartFactory.createLineChart(
-                sensor.getKey(),                  // chart title
-                "Date",                           // X-Axis Label
-                "Value",                          // Y-Axis Label
-                dataset,                          // dataset
-                PlotOrientation.VERTICAL,         // orientation
-                false,                            // legend
-                true,                             // tooltips
-                false                             // urls
-        );
-        CategoryAxis axis = chart.getCategoryPlot().getDomainAxis();
-        axis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);           // ustawienie pozycji dat pod kątem 90 stopni
-        return chart;
-    }
-
-    private DefaultCategoryDataset createDataSetLineChart(Sensor sensor){
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        int iterator=0;
-        for (Value oneValue : sensor.getValues()) {
-            if (++iterator%2 == 0)
-                dataset.addValue(oneValue.getValue(), sensor.getKey(), oneValue.getDate());
-            else
-                dataset.addValue(oneValue.getValue(), sensor.getKey(), "");
-        }
-        return dataset;
-    }
-
-    private void createLevelBarChart(int stationID){
-        int id = stationCityList.get(stationID).getId();
-        IndeksAir app = parsing.fetchIndeksAir(id);
-        chartsPanel.setLayout(new BorderLayout());
-        chartsPanel.add(new ChartPanel(createBarChart(app)));
-    }
-    private JFreeChart createBarChart(IndeksAir app){
-        DefaultCategoryDataset dataset = createDataSetBarChart(app);
-        JFreeChart chart = ChartFactory.createBarChart("Levels of param", "Param", "Level", dataset, PlotOrientation.VERTICAL, false, true, false);
-        CategoryPlot plot = chart.getCategoryPlot();
-        plot.setRangeGridlinePaint(WHITE);
-        return chart;
-    }
-
-    private DefaultCategoryDataset createDataSetBarChart(IndeksAir app){
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        if(app.getSo2IndexLevel()!=null)
-            dataset.addValue(5-app.getSo2IndexLevel().getId(), "Level", "SO2");
-        if(app.getNo2IndexLevel()!=null)
-            dataset.addValue(5-app.getNo2IndexLevel().getId(), "Level", "NO2");
-        if(app.getO3IndexLevel()!=null)
-            dataset.addValue(5-app.getO3IndexLevel().getId(), "Level", "O3");
-        if(app.getPm25IndexLevel()!=null)
-            dataset.addValue(5-app.getPm25IndexLevel().getId(), "Level", "PM2.5");
-        if(app.getPm10IndexLevel()!=null)
-            dataset.addValue(5-app.getPm10IndexLevel().getId(), "Level", "PM10");
-        if(app.getC6h6IndexLevel()!=null)
-            dataset.addValue(5-app.getC6h6IndexLevel().getId(), "Level", "C6H6");
-        return dataset;
-    }
-
-
-    /*private Date formattingDate (Value oneValue){
-        String dateInString = oneValue.getDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM HH:mm");
-        Date date = (Date) formatter.parse(dateInString);
-        return date;
-    }*/
-
 }
