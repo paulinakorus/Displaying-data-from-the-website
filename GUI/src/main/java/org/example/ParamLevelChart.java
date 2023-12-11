@@ -40,28 +40,9 @@ public class ParamLevelChart {
         JFreeChart chart = ChartFactory.createBarChart("Levels of param", "Param", "Level", dataset, PlotOrientation.VERTICAL, false, true, false);
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setRangeGridlinePaint(WHITE);
+        plot.setRenderer(new CustomBarColorRenderer(dataset));
 
-        CategoryItemRenderer renderer = new BarRenderer();
-        for (int i=0; i<dataset.getRowCount(); i++){
-            for(int j=0; j<dataset.getColumnCount(); j++){
-                setColorToLevel(i, j, dataset, renderer);
-                System.out.println("row: " + i + "  column: " + j + "  value: " + dataset.getValue(i, j));
-            }
-        }
         return chart;
-    }
-
-    private void setColorToLevel(int i, int j, DefaultCategoryDataset dataset, CategoryItemRenderer renderer){
-        if(dataset.getValue(i, j).equals(5.0))
-            renderer.setSeriesPaint(j, new Color(0,174,29));
-        else if(dataset.getValue(i, j).equals(4.0))
-            renderer.setSeriesPaint(j, new Color(0, 238, 40));
-        else if(dataset.getValue(i, j).equals(3.0))
-            renderer.setSeriesPaint(j, new Color(198, 238, 0));
-        else if(dataset.getValue(i, j).equals(2.0))
-            renderer.setSeriesPaint(j, new Color(238, 166, 0));
-        else if(dataset.getValue(i, j).equals(1.0))
-            renderer.setSeriesPaint(j, new Color(238, 71, 0));
     }
 
     private DefaultCategoryDataset createDataSetBarChart(IndeksAir app){
